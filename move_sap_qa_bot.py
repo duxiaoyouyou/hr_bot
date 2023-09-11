@@ -47,15 +47,15 @@ class qa_bot:
         return {"query": query, "response": response["choices"][0]["message"]["content"]}
 
     def ask(self, query, message_history):
-        messages = [
+        messages_for_ask = [
                 {"role": "system", "content": self.system_message}
             ]
-        messages.extend(message_history)
-        messages.append({"role": "user", "content": query})
-        print(f"messages: {messages}")
+        messages_for_ask.extend(message_history)
+        messages_for_ask.append({"role": "user", "content": query})
+        print(f"messages: {messages_for_ask}")
         response = self.openai.ChatCompletion.create(
             engine="gpt-4",
-            messages=messages,
+            messages=messages_for_ask,
             temperature=0
         )
         return response["choices"][0]["message"]["content"]

@@ -18,12 +18,12 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 if "prompt_history" not in st.session_state:
     st.session_state.prompt_history = []
-
+with st.chat_message("assistant"):
+    st.markdown("你好，我是AI助手Freya，专门回答关于MoveSAP股票相关的问题。")
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
-
 # Accept user input
 if prompt := st.chat_input("How can I help you?"):
     # Display user message in chat message container
@@ -41,6 +41,7 @@ if prompt := st.chat_input("How can I help you?"):
             response_message = response["response"]
 
         else:
+            print(f"prompt history: {st.session_state.prompt_history[-16:]}")
             response = bot.ask(prompt, message_history=st.session_state.prompt_history[-16:])
             query = prompt
             response_message = response

@@ -40,7 +40,8 @@ class extractor:
                     f"exchange rate when bank received the cash amount, " \
                     f"income tax rate upperbound and actual income tax rate from the question into " \
                     f"json with stockQuantity as key for stock quantity to be sold, " \
-                    f"stockPrice as the key for stock selling day price, saleExRate as exchange rate at stock selling date," \
+                    f"stockPrice as the key for stock selling day price, saleExRate as exchange rate " \
+                    f"at stock selling date," \
                     f"actualTaxRate as the key for actual income tax rate, transferExRate as the key for " \
                     f"exchange rate when bank received the cash amount and the maxTaxRate as the key for " \
                     f"income tax rate upperbound. " \
