@@ -19,12 +19,13 @@ class qa_bot:
         infoJson = json.loads(infoStr)
         selling_info = move_sap_selling_info(infoJson)
         if selling_info.errorCode:
-            return "抱歉，我们需要如下信息来回答您的问题\n" \
-                   "1. 员工获得的move sap数额\n" \
-                   "2. move sap售卖当天的汇率\n" \
-                   "3. move sap售卖当天的股价\n" \
-                   "4. 售出股票到花旗银行当天的汇率\n" \
-                   "5. 售出股票当月员工的个人所得税税率"
+            return {"query": query,
+                    "response": "抱歉，我们需要如下信息来回答您的问题\n"
+                                "1. 员工获得的move sap数额\n"
+                                "2. move sap售卖当天的汇率\n"
+                                "3. move sap售卖当天的股价\n"
+                                "4. 售出股票到花旗银行当天的汇率\n"
+                                "5. 售出股票当月员工的个人所得税税率"}
         calculator = move_sap_calculator.calculator(selling_info.stockQuantity,
                                 selling_info.saleExRate,
                                 selling_info.stockPrice,

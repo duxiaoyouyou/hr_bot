@@ -1,8 +1,8 @@
 ---
 applications:
-- name: hr_bot
+- name: hrbot
   routes:
-  - route: hr_bot.cfapps.eu12-001.hana.ondemand.com
+  - route: hrbot.cfapps.eu12-001.hana.ondemand.com
   path: ./
   memory: 1G
   buildpack: python_buildpack
