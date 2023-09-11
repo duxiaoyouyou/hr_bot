@@ -31,9 +31,7 @@ class extractor:
             temperature=0
         )
         response = response["choices"][0]["message"]["content"]
-        print(response)
         isInfoComplete = bool(int(response))
-        print(isInfoComplete)
         if isInfoComplete:
             query = f"Please parse the stock quantity to be sold, stock selling day price, " \
                     f"exchange rate at stock selling date, " \
