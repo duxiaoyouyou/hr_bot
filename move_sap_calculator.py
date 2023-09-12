@@ -18,7 +18,8 @@ class calculator:
         self.withold_shares_amount_to_sell = self.shares_to_be_vested * self.max_income_tax_rate
 
     def __calculate_withhold_income_tax_amount_on_sale(self):
-        self.withold_income_tax_amount_on_sale = self.withold_shares_amount_to_sell * self.vesting_date_exchange_rate * self.vesting_date_stock_price
+        self.withold_income_tax_amount_on_sale = self.withold_shares_amount_to_sell * self.vesting_date_exchange_rate * \
+                                                 self.vesting_date_stock_price
 
     def __calculate_actual_income_tax_amount(self):
         self.actual_income_tax_amount = self.shares_to_be_vested * self.actual_income_tax_rate * self.vesting_date_exchange_rate * self.vesting_date_stock_price

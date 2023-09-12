@@ -15,7 +15,7 @@ class qa_bot:
 
     def ask_by_calculation(self, query):
         infoStr = self.extractor.extract(query)
-        print(f"Selling info: {infoStr}")
+        print(f"Selling info: {infoStr}\n\n")
         infoJson = json.loads(infoStr)
         selling_info = move_sap_selling_info(infoJson)
         if selling_info.errorCode:
@@ -34,7 +34,7 @@ class qa_bot:
                                 selling_info.maxTaxRate)
         calculator.calculate()
         calculation_detail = calculator.to_calculation_details()
-        print(f"Calculation detail: {calculation_detail}")
+        print(f"Calculation detail: {calculation_detail}\n\n", flush=True)
         query = f"员工的问题是：\n {query} \n" \
                 f"以下是这次Move SAP股票的相关计算信息： \n {calculation_detail} "
         response = self.openai.ChatCompletion.create(
@@ -45,6 +45,7 @@ class qa_bot:
             ],
             temperature=0
         )
+        print(f"Query: {query}\n\n", flush=True)
         return {"query": query, "response": response["choices"][0]["message"]["content"]}
 
     def ask(self, query, message_history):
@@ -53,7 +54,7 @@ class qa_bot:
             ]
         messages_for_ask.extend(message_history)
         messages_for_ask.append({"role": "user", "content": query})
-        print(f"messages: {messages_for_ask}")
+        print(f"Messages: {messages_for_ask}", flush=True)
         response = self.openai.ChatCompletion.create(
             engine="gpt-4",
             messages=messages_for_ask,

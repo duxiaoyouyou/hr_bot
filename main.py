@@ -27,7 +27,6 @@ for message in st.session_state.messages:
 # Accept user input
 if prompt := st.chat_input("How can I help you?"):
     # Display user message in chat message container
-    print(f"User question: {prompt}")
     with st.chat_message("user"):
         st.markdown(prompt)
     # Add user message to chat history
@@ -41,14 +40,12 @@ if prompt := st.chat_input("How can I help you?"):
             response_message = response["response"]
 
         else:
-            print(f"prompt history: {st.session_state.prompt_history[-16:]}")
             response = bot.ask(prompt, message_history=st.session_state.prompt_history[-16:])
             query = prompt
             response_message = response
         st.session_state.messages.append({"role": "assistant", "content": response_message})
         st.session_state.prompt_history.append({"role": "user", "content": query})
         st.session_state.prompt_history.append({"role": "assistant", "content": response_message})
-        print(f"Bot answer: {response_message}")
         message_placeholder.markdown(response_message)
     # Add assistant response to chat history
 
