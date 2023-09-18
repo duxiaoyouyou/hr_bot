@@ -1,3 +1,6 @@
+import logging
+logger = logging.getLogger("calculator.py")
+
 class calculator:
     def __init__(self, shares_to_be_vested, vesting_date_exchange_rate, vesting_date_stock_price,
                  actual_income_tax_rate, exchange_rate_on_transfer,

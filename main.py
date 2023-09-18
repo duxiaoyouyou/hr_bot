@@ -1,6 +1,25 @@
 import openai
 from move_sap_qa_bot import qa_bot
 import streamlit as st
+import logging
+from sap import cf_logging
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+openai.api_key = os.getenv("API_KEY")
+openai.api_base = os.getenv("API_BASE")
+openai.api_type = "azure"
+openai.api_version = "2023-03-15-preview"
+
+@st.cache_data
+def set_log():
+    cf_logging.init()
+
+set_log()
+
+logger = logging.getLogger("main.py")
 
 openai.api_key = "9f32e291dbd248c2b4372647bd937577"
 openai.api_base = "https://miles-playground.openai.azure.com"
@@ -8,9 +27,6 @@ openai.api_type = "azure"
 openai.api_version = "2023-03-15-preview"
 
 bot = qa_bot(openai)
-# print(bot.ask("Freya，你准备一下，max拿到了1000股movesap，"
-#                                             "8/13卖掉的时候股价好像是10块，当天的汇率是7.1，花旗那边10/14收到钱，收到那天的汇率是7.0"
-#                                             "这位同事实际纳税比例应该是30%"))
 st.title("HR QA Bot")
 
 # Initialize chat history

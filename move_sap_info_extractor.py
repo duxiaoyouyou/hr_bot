@@ -1,6 +1,7 @@
 # import openai
 # import json
-
+import logging
+logger = logging.getLogger("extractor.py")
 class extractor:
 
     def __init__(self, openai):
@@ -74,6 +75,7 @@ class extractor:
 class move_sap_selling_info:
     def __init__(self, dict):
         self.errorCode = bool(int(dict['errorCode']))
+        logger.info(f"dict {dict}")
         if not self.errorCode:
             self.stockQuantity = float(dict['stockQuantity'])
             self.stockPrice = float(dict['stockPrice'])
@@ -81,19 +83,3 @@ class move_sap_selling_info:
             self.actualTaxRate = float(dict['actualTaxRate'])
             self.transferExRate = float(dict['transferExRate'])
             self.maxTaxRate = float(dict['maxTaxRate'])
-
-# openai.api_key = "9f32e291dbd248c2b4372647bd937577"
-# openai.api_base = "https://miles-playground.openai.azure.com"
-# openai.api_type = "azure"
-# openai.api_version = "2023-03-15-preview"
-# extracotr = extractor(openai)
-# infoStr = extracotr.extract("max 有1000股需要行权，8/13卖掉的时候股价好像是10块，当天的汇率是7.1，"
-#                             "花旗那边10/14收到钱，收到那天的汇率是7.0"
-#                             "这位同事实际纳税比例应该是30%")
-# print(infoStr)
-# infoStr = extracotr.extract("max有1000股，卖掉的时候汇率为7")
-#
-# print(json.loads(infoStr))
-# info = move_sap_selling_info(json.loads(infoStr))
-# print(info)
-# print(info.errorCode)
