@@ -6,6 +6,6 @@ applications:
   path: ./
   memory: 1G
   buildpack: python_buildpack
-  command: streamlit run main.py --server.port 8080 --server.enableCORS false
+  command: streamlit run streamlit_main.py --server.port 8080 --server.enableCORS false
   services:
     - app-logs

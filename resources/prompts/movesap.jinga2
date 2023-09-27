@@ -1,0 +1,25 @@
+以下是这次Move SAP股票的相关信息计算：
+第一部分：员工获得vest的MoveSAP股票。
+1.在德国，SAP公司给员工发放MoveSap股票，股票会在未来3年里面vest给员工，其中6个月后第一次vest，金额为总数的2/12，之后每3个月还会vest一次，每次是1/12.当前案例：员工获得vest {{detail.shares_vested}}股。
+Vest的股票价值 = {{detail.shares_vested}} * €{{detail.share_price_vest}} = €{{detail.estimated_stock_cash_value_euro}}。
+
+2.按照Vest当时汇率，{{detail.exchange_rate_for_vest}}，实际价值的人民币是{{detail.estimated_stock_cash_value_euro}} * {{detail.exchange_rate_for_vest}} = {{detail.estimated_stock_cash_value_rmb}}，注意，这个股票到中国后的实际税收，以这个基准来的。
+
+第二部分：卖掉一部分股票抵税
+3.由于中国员工的最高税率是{{detail.tax_rate_upper}}%，所以系统会预先卖掉部分股票以抵扣那{{detail.tax_rate_upper}}%的税，剩下的部分会转入个人账户。
+当前案例：需要卖掉的股票价值是：€{{detail.estimated_stock_cash_value_euro}} * {{detail.tax_rate_upper}}% = €{{detail.income_tax_upper}}。
+
+4.考虑到卖出股票价值可能和实际不同，所以会结合实际情况保留一个buff确保大部份情况下抵税不会出现异常，所以实际卖掉的股票会比{{detail.tax_rate_upper}}%更高一点。
+当前案例： 预留buff情况下，判定需要卖出{{detail.shares_sold}}股。
+
+5. 剩余的股票数量 = {{detail.shares_vested}} - {{detail.shares_sold}} = {{detail.shares_delivered}}。这{{detail.shares_delivered}}股会进入MoveSAP的个人账号，算做利得。
+
+6. 当日抛售的实际股价是€{{detail.share_price}}，净股票销售收入 = €{{detail.share_price}} * {{detail.shares_sold}} = €{{detail.gross_proceeds_euro}}。
+
+7. 扣去一个手续费€{{detail.brokerage}}。€{{detail.gross_proceeds_euro}} - €{{detail.brokerage}} = €{{detail.net_proceeds_euro}}，这笔钱将作为外汇进入中国，用于之后的抵税。
+
+第三部分：钱到了中国
+8. 进入中国之后，换成人民币，然后进入审核期，由花旗银行暂时保管6周。进入中国时候的汇率是{{detail.citi_spot_rate}}，所以换成人民币{{detail.net_proceeds_euro}} * {{detail.citi_spot_rate}} = {{detail.net_sale_proceeds_cny}}。花旗银行保管的同时，需要实际精算员工需要缴纳的税收，通常不到{{detail.tax_rate_upper}}%。
+当前案例：员工的税收是¥{{detail.actual_income_tax}}，这笔{{detail.actual_income_tax}}的税收SAP公司会帮员工垫付，等到审核期结束卖出的时候再抵扣。
+
+9. 审核期结束，员工会收到一笔cash，金额为{{detail.net_sale_proceeds_cny}}-{{detail.actual_income_tax}} = {{detail.cash_income}}。这笔cash不会在payslip上看到，直接被打到卡上，显示主题为‘Cash Ops Stock’。

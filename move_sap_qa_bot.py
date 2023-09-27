@@ -1,70 +1,87 @@
-from move_sap_info_extractor import extractor, move_sap_selling_info
-import move_sap_calculator
-import json
 import logging
+import openai
+import json
+
+import calculation_detail_store
+
 logger = logging.getLogger("qa_bot.py")
 
-class qa_bot:
 
-    def __init__(self, openai):
-        self.openai = openai
-        self.extractor = extractor(openai)
-        self.system_message = "你是一个AI助手，专门回答关于MoveSAP股票相关的问题。" \
-                              "MoveSAP是SAP公司给优秀员工股票的一种嘉奖方式。" \
-                              "通常情况下，在公司发放给员工股票的同时，就需要卖掉其中的一部分用来为员工缴纳相关的个人所得税。" \
-                              "在每次面对提问时，我都会给你一个关于当前员工收入MoveSap股票的详细计算过程以帮助你正确回答问题。"
+class MoveSapBot:
+    def __init__(self, llm: openai):
+        self.llm = llm
+        self.system_message = open('resources/movesap_bot_system_message.txt').read()
+        self.calculation_detail_store = calculation_detail_store.InMemoryCalculationDetail()
+        self.functions = {'get_calculation_detail': self.calculation_detail_store.get_calculation_detail}
+        self.dialogueManager = DialogueManager()
 
-
-    def ask_by_calculation(self, query):
-        infoStr = self.extractor.extract(query)
-        logger.info(f"Selling info: {infoStr}")
-        infoJson = json.loads(infoStr)
-        selling_info = move_sap_selling_info(infoJson)
-        if selling_info.errorCode:
-            return {"query": query,
-                    "response": "抱歉，我们需要如下信息来回答您的问题\n"
-                                "1. 员工获得的move sap数额\n"
-                                "2. move sap售卖当天的汇率\n"
-                                "3. move sap售卖当天的股价\n"
-                                "4. 售出股票到花旗银行当天的汇率\n"
-                                "5. 售出股票当月员工的个人所得税税率"}
-        calculator = move_sap_calculator.calculator(selling_info.stockQuantity,
-                                selling_info.saleExRate,
-                                selling_info.stockPrice,
-                                selling_info.actualTaxRate,
-                                selling_info.transferExRate,
-                                selling_info.maxTaxRate)
-        calculator.calculate()
-        calculation_detail = calculator.to_calculation_details()
-        logger.info(f"Calculation detail: {calculation_detail}")
-        query = f"员工的问题是：\n {query} \n" \
-                f"以下是这次Move SAP股票的相关计算信息： \n {calculation_detail} "
-        response = self.openai.ChatCompletion.create(
+    def search(self, question: str) -> str:
+        self.dialogueManager.add_message('user', question)
+        messages = [
+            {"role": "system", "content": self.system_message},
+            {"role": "system",
+             "content": "Don't make assumptions about what values to use with functions. "
+                        "Ask for clarification if a user request is ambiguous."}
+        ]
+        messages.extend(self.dialogueManager.dialogue_history)
+        messages.append({'role': 'user', 'content': question})
+        functions = [
+            {
+                "name": "get_calculation_detail",
+                "description": "Retrieves moveSAP calculation steps based on the parameters provided, "
+                               "this calculation steps will be used to answer employees' payroll related question"
+                               "regarding moveSAP stock grant",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "employee_id": {
+                            "type": "integer",
+                            "description": "sap i-number of the user"
+                        }
+                    },
+                    "required": ["employee_id"]
+                }
+            }
+        ]
+        response = openai.ChatCompletion.create(
             engine="gpt-4",
-            messages=[
-                {"role": "system", "content": self.system_message},
-                {"role": "user", "content": query}
-            ],
-            temperature=0
+            messages=messages,
+            functions=functions,
+            function_call="auto",
         )
-        logger.info(f"Query: {query}")
-        return {"query": query, "response": response["choices"][0]["message"]["content"]}
+        response_message = response['choices'][0]['message']
+        print(f'First openai Response: {response_message}')
+        if 'function_call' in response_message:
+            function_call = response_message['function_call']
+            function_to_call = self.functions[function_call['name']]
+            function_args = json.loads(function_call['arguments'])
+            res = function_to_call(**function_args)
+            print(f'function_call result {res}')
+            self.dialogueManager.add_message('user', res)
+            print(f'Function Call Response: {response_message}')
+            response = openai.ChatCompletion.create(
+                engine="gpt-4",
+                messages=messages
+            )
+            print('Second openai response: {}'.format(response['choices'][0]['message']))
+            if 'content' in response['choices'][0]['message']:
+                return response['choices'][0]['message']['content']
+            return ''
+        response_message_content = response['choices'][0]['message']['content']
+        self.dialogueManager.add_message('assistant', response_message_content)
+        return response_message_content
 
-    def ask(self, query, message_history):
-        messages_for_ask = [
-                {"role": "system", "content": self.system_message}
-            ]
-        messages_for_ask.extend(message_history)
-        messages_for_ask.append({"role": "user", "content": query})
-        logger.info(f"Messages: {messages_for_ask}")
-        response = self.openai.ChatCompletion.create(
-            engine="gpt-4",
-            messages=messages_for_ask,
-            temperature=0
-        )
-        return response["choices"][0]["message"]["content"]
 
+class DialogueManager:
 
+    dialogue_history: list
 
+    def __init__(self):
+        self.dialogue_history = []
 
+    def add_message(self, role: str, content: str):
+        self.dialogue_history = self.dialogue_history[-15:]
+        self.dialogue_history.append({"role": role, "content": content})
 
+    def reset_dialogue(self):
+        self.dialogue_history = []
