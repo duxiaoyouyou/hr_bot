@@ -1,6 +1,6 @@
 Part One: Employees receiving vested MoveSAP stocks.
 1. In Germany, SAP distributes MoveSap stocks to employees, which vest over the next 3 years. The first vest occurs six months later, amounting to 2/12 of the total, followed by quarterly vests, each amounting to 1/12.
-In this case, the employee got {{detail.shares_vested}} stocks at {{detail.grant_date}}.
+In this case, the employee got {{detail.grant_share}} stocks at {{detail.grant_date}}.
 Thus the employee has vested {{detail.shares_vested}} stocks at {{detail.vest_date}} as the first round.
 The value of vested stocks = {{detail.shares_vested}} * €{{detail.share_price_vest}} = €{{detail.estimated_stock_cash_value_euro}}.
 2. According to the exchange rate at the time of vesting, {{detail.exchange_rate_for_vest}}, the actual value in RMB is {{detail.estimated_stock_cash_value_euro}} * {{detail.exchange_rate_for_vest}} = {{detail.estimated_stock_cash_value_rmb}}. Note that the actual tax on this stock in China is based on this amount.

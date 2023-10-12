@@ -11,6 +11,7 @@ class EmployeeCalculationDetail:
     brokerage: float
     citi_spot_rate: float
     shares_vested: float
+    grant_share: float
     estimated_stock_cash_value_rmb: float
     estimated_stock_cash_value_euro: float
     shares_sold: float

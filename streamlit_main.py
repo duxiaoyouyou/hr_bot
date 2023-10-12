@@ -5,10 +5,10 @@ import logging
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv('.env')
 
-openai.api_key = os.getenv("API_KEY")
-openai.api_base = os.getenv("API_BASE")
+openai.api_key = "9f32e291dbd248c2b4372647bd937577" #os.getenv("API_KEY")
+openai.api_base = "https://miles-playground.openai.azure.com" #os.getenv("API_BASE")W
 
 logger = logging.getLogger("streamlit_main.py")
 
@@ -24,7 +24,8 @@ if "messages" not in st.session_state:
 if "bot" not in st.session_state:
     st.session_state.bot = MoveSapBot(openai)
 with st.chat_message("assistant"):
-    st.markdown(open('resources/hello_message.txt').read())
+    #st.markdown(open('resources/hello_message.txt').read())
+    st.markdown(open('resources/hello_message.txt', encoding='utf-8').read())  
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
