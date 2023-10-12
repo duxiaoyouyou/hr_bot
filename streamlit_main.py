@@ -24,7 +24,7 @@ if "messages" not in st.session_state:
 if "bot" not in st.session_state:
     st.session_state.bot = MoveSapBot(openai)
 with st.chat_message("assistant"):
-    st.markdown("你好，我是AI助手Freya，专门回答关于MoveSAP股票相关的问题。")
+    st.markdown(open('resources/hello_message.txt').read())
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
@@ -34,13 +34,23 @@ if prompt := st.chat_input("How can I help you?"):
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
-    # Add user message to chat history
-    st.session_state.messages.append({"role": "user", "content": prompt})
     bot = st.session_state.bot
-    # Display assistant response in chat message container
-    with st.chat_message("assistant"):
-        message_placeholder = st.empty()
-        response = bot.search(prompt)
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        message_placeholder.markdown(response)
+    if len(st.session_state.messages) == 0:
+        bot.load_calculation_detail_to_system_message(prompt)
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            response = "查询计算过程已完成"
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            message_placeholder.markdown(response)
+    else:
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("assistant"):
+            message_placeholder = st.empty()
+            response = bot.search_normal(prompt)
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            message_placeholder.markdown(response)
+
 
