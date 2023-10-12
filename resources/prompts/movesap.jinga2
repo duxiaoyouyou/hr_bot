@@ -14,7 +14,7 @@ Vest的股票价值 = {{detail.shares_vested}} * €{{detail.share_price_vest}} 
 
 5. 剩余的股票数量 = {{detail.shares_vested}} - {{detail.shares_sold}} = {{detail.shares_delivered}}。这{{detail.shares_delivered}}股会进入MoveSAP的个人账号，算做利得。
 
-6. 当日抛售的实际股价是€{{detail.share_price}}，净股票销售收入 = €{{detail.share_price}} * {{detail.shares_sold}} = €{{detail.gross_proceeds_euro}}。
+6. 当日抛售的实际股价是€{{detail.executed_price}}，净股票销售收入 = €{{detail.executed_price}} * {{detail.shares_sold}} = €{{detail.gross_proceeds_euro}}。
 
 7. 扣去一个手续费€{{detail.brokerage}}。€{{detail.gross_proceeds_euro}} - €{{detail.brokerage}} = €{{detail.net_proceeds_euro}}，这笔钱将作为外汇进入中国，用于之后的抵税。
 
