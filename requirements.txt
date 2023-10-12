@@ -2,3 +2,4 @@ streamlit==1.25.0
 openai==0.27.7
 sap-cf-logging==4.2.5
 python-dotenv==0.21.1
+python-dateutil==2.8.2

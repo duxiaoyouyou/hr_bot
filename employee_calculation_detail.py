@@ -20,6 +20,8 @@ class EmployeeCalculationDetail:
     net_sale_proceeds_cny: float
     actual_income_tax: float
     cash_income: float
+    vest_date: str
+    grant_date: str
 
 
 

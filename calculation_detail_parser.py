@@ -1,6 +1,8 @@
 from employee_calculation_detail import EmployeeCalculationDetail
 import pandas as pd
 import logging
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 logger = logging.getLogger("calculation_detail_parser.logger")
 
@@ -15,10 +17,11 @@ def parse_data(file, employee_id: int) -> EmployeeCalculationDetail:
     net_sale_proceeds_cny = df_indie['Net sale proceeds in CNY(A)'][0]
     actual_income_tax = df_indie['SAP Advance Payment(B)'][0]
     cash_income = df_indie['Remaining Amount in LC to GPT (D)'][0]
-
     df_report = pd.read_excel(file, sheet_name='Report')
     df_employee_report = df_report[df_report['TAXPAYER_ID_(PERS_NO)'] == employee_id]
     share_price_vest = df_employee_report['SHARE_PRICE_VEST'][0]
+    vest_date = datetime.combine(df_employee_report['VEST_DATE'][0].date, datetime.min.time())
+    grant_date = vest_date + relativedelta(months=-6)
     exchange_rate_for_vest = df_employee_report['EXCHANGE_RATE_FOR_VEST'][0]
     tax_rate_upper = df_employee_report['TAX_RATE_(USED_TO_CALCULATE_ESTIMATED_STC)'][0]
     executed_price = df_employee_report['EXECUTED_PRICE'][0]
@@ -45,7 +48,9 @@ def parse_data(file, employee_id: int) -> EmployeeCalculationDetail:
                                      net_proceeds_euro=net_proceeds_euro,
                                      net_sale_proceeds_cny=net_sale_proceeds_cny,
                                      actual_income_tax=actual_income_tax,
-                                     cash_income=cash_income)
+                                     cash_income=cash_income,
+                                     grant_date=grant_date.strftime('%Y/%m/%d'),
+                                     vest_date=vest_date.strftime('%Y/%m/%d'))
 
 
 def parse_data_as_dict(file) -> dict[int, EmployeeCalculationDetail]:
@@ -68,6 +73,9 @@ def parse_data_as_dict(file) -> dict[int, EmployeeCalculationDetail]:
         shares_delivered = df_employee_report['SHARES_DELIVERED'][0]
         gross_proceeds_euro = df_employee_report['GROSS_PROCEEDS'][0]
         net_proceeds_euro = df_employee_report['NET_PROCEEDS_9M64'][0]
+        vest_date = pd.to_datetime(df_employee_report['VEST_DATE'][0])
+        # vest_date = datetime.strptime(df_employee_report['VEST_DATE'][0], '%Y/%m/%d')
+        grant_date = vest_date + relativedelta(months=-6)
         df_indie = pd.read_excel(file, sheet_name='By Indi', skiprows=[0, 1])
         df_indie = df_indie[df_indie['ID'] == employee_id]
         net_sale_proceeds_cny = df_indie['Net sale proceeds in CNY(A)'][0]
@@ -93,6 +101,8 @@ def parse_data_as_dict(file) -> dict[int, EmployeeCalculationDetail]:
                                                                                    net_proceeds_euro=net_proceeds_euro,
                                                                                    net_sale_proceeds_cny=net_sale_proceeds_cny,
                                                                                    actual_income_tax=actual_income_tax,
+                                                                                   vest_date=vest_date.strftime('%Y/%m/%d'),
+                                                                                   grant_date=grant_date.strftime('%Y/%m/%d'),
                                                                                    cash_income=cash_income)
     return employee_id_vs_calculation_detail
 
