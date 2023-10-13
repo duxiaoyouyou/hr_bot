@@ -91,7 +91,6 @@ class MoveSapBot:
         
         Please only return employee id. \
         Ensure do NOT provide anything else. \
-        
        """
        
         self.dialogueManager.add_message('user', prompt)
@@ -107,8 +106,6 @@ class MoveSapBot:
         print(f'openai Response to extract employee id: {response_message_content}')
         self.dialogueManager.add_message('assistant', response_message_content)
         return response_message_content
-
-
 
 
     def load_calculation_detail_to_system_message(self, question: str) -> str:  
