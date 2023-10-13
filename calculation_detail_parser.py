@@ -27,7 +27,6 @@ def parse_data(file, employee_id: int) -> EmployeeCalculationDetail:
     executed_price = df_employee_report['EXECUTED_PRICE'][0]
     brokerage = df_employee_report['FEES'][0]
     shares_vested = df_employee_report['SHARES_VESTED'][0]
-    grant_share = round(shares_vested * 6)
     estimated_stock_cash_value_euro = df_employee_report['TAXABLE_BENEFIT-WAGETYPE_9M61__9M62/_9M65/_9M66'][0]
     shares_sold = df_employee_report['SHARES_SOLD'][0]
     shares_delivered = df_employee_report['SHARES_DELIVERED'][0]
@@ -41,7 +40,7 @@ def parse_data(file, employee_id: int) -> EmployeeCalculationDetail:
                                      brokerage=brokerage,
                                      citi_spot_rate=citi_spot_exchange_rate,
                                      shares_vested=shares_vested,
-                                     grant_share=grant_share,
+                                     grant_share = round(shares_vested * 6),
                                      estimated_stock_cash_value_rmb=estimated_stock_cash_value_rmb,
                                      estimated_stock_cash_value_euro=estimated_stock_cash_value_euro,
                                      shares_sold=shares_sold,
@@ -70,7 +69,6 @@ def parse_data_as_dict(file) -> dict[int, EmployeeCalculationDetail]:
         executed_price = df_employee_report['EXECUTED_PRICE'][0]
         brokerage = df_employee_report['FEES'][0]
         shares_vested = df_employee_report['SHARES_VESTED'][0]
-        grant_share = round(shares_vested * 6)
         estimated_stock_cash_value_euro = df_employee_report['TAXABLE_BENEFIT-WAGETYPE_9M61__9M62/_9M65/_9M66'][0]
         shares_sold = df_employee_report['SHARES_SOLD'][0]
         shares_delivered = df_employee_report['SHARES_DELIVERED'][0]
@@ -96,7 +94,7 @@ def parse_data_as_dict(file) -> dict[int, EmployeeCalculationDetail]:
                                                                                    brokerage=brokerage,
                                                                                    citi_spot_rate=citi_spot_exchange_rate,
                                                                                    shares_vested=shares_vested,
-                                                                                   grant_share=grant_share,
+                                                                                   grant_share = round(shares_vested * 6),
                                                                                    estimated_stock_cash_value_rmb=estimated_stock_cash_value_rmb,
                                                                                    estimated_stock_cash_value_euro=estimated_stock_cash_value_euro,
                                                                                    shares_sold=shares_sold,

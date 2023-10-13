@@ -80,20 +80,21 @@ class MoveSapBot:
         prompt = f"""
         The user provides his input delimited by triple quotes. \
         \"\"\" {input} \"\"\" \    
-       
+        You will return the employee ID based on the input.
         Your answer will be in a consistent format, following the examples delimited by triple hyphens below . \
         --- 
-            input: My SAP ID is 1033961 \
+            input: I am working in SAP, my ID is 1033961 \
             answer: 1033961 \
-            input: I am with 1032059 \
+            input: I am with ID 1032059 \
             answer: 1032059 \
+            input: 1033961 \
+            answer: 1033961 \
+            input: 1032059 \
+            answer: 1032059 \    
         --- 
-        
         Please only return employee id. \
         Ensure do NOT provide anything else. \
        """
-       
-        self.dialogueManager.add_message('user', prompt)
         messages = [
             {"role": "user", "content": prompt}
         ]
@@ -103,8 +104,6 @@ class MoveSapBot:
             messages=messages
         )
         response_message_content = response['choices'][0]['message']['content']
-        print(f'openai Response to extract employee id: {response_message_content}')
-        self.dialogueManager.add_message('assistant', response_message_content)
         return response_message_content
 
 
