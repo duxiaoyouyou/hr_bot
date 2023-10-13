@@ -85,7 +85,7 @@ class MoveSapBot:
         try:   
             calculation_detail = self.calculation_detail_store.get_calculation_detail(employee_id)  
         except Exception as e:  
-            return f"获取员工股票信息时候发生错误: {type(e).__name__}, {str(e)}"  
+            return f"没有查询到员工: {question}的move SAP记录"  
  
         self.system_message = self.system_message + '\n' + calculation_detail  
         print(f'system message updated to: {self.system_message}')  
