@@ -75,10 +75,25 @@ class MoveSapBot:
         self.dialogueManager.add_message('assistant', response_message_content)
         return response_message_content
 
-    def load_calculation_detail_to_system_message(self, question: str):
-        calculation_detail = self.calculation_detail_store.get_calculation_detail(employee_id=int(question))
-        self.system_message = self.system_message + '\n' + calculation_detail
-        print(f'system message updated to: {self.system_message}')
+
+    def load_calculation_detail_to_system_message(self, question: str) -> str:  
+        try:   
+            employee_id = int(question)  
+        except ValueError:  
+            return f"你输入的员工号: {question}是不合法的"  
+    
+        try:   
+            calculation_detail = self.calculation_detail_store.get_calculation_detail(employee_id)  
+        except Exception as e:  
+            return f"获取员工股票信息时候发生错误: {type(e).__name__}, {str(e)}"  
+ 
+        self.system_message = self.system_message + '\n' + calculation_detail  
+        print(f'system message updated to: {self.system_message}')  
+    
+        employee_stock_info = self.calculation_detail_store.get_employee_stock_info(employee_id=int(question)) 
+        print(f'employee_stock_info : {employee_stock_info }')  
+        return employee_stock_info 
+
 
     def search_normal(self, question: str) -> str:
         self.dialogueManager.add_message('user', question)

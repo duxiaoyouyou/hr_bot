@@ -37,12 +37,12 @@ if prompt := st.chat_input("How can I help you?"):
         st.markdown(prompt)
     bot = st.session_state.bot
     if len(st.session_state.messages) == 0:
-        bot.load_calculation_detail_to_system_message(prompt)
+        
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
-            response = "查询计算过程已完成"
+            response = bot.load_calculation_detail_to_system_message(prompt) #"查询计算过程已完成"
             st.session_state.messages.append({"role": "assistant", "content": response})
             message_placeholder.markdown(response)
     else:
