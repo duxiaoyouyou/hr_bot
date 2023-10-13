@@ -76,22 +76,58 @@ class MoveSapBot:
         return response_message_content
 
 
+    def get_employee_id(self, input: str) -> str:
+        prompt = f"""
+        The user provides his input delimited by triple quotes. \
+        \"\"\" {input} \"\"\" \    
+       
+        Your answer will be in a consistent format, following the examples delimited by triple hyphens below . \
+        --- 
+            input: My SAP ID is 1033961 \
+            answer: 1033961 \
+            input: I am with 1032059 \
+            answer: 1032059 \
+        --- 
+        
+        Please only return employee id. \
+        Ensure do NOT provide anything else. \
+        
+       """
+       
+        self.dialogueManager.add_message('user', prompt)
+        messages = [
+            {"role": "user", "content": prompt}
+        ]
+        print(f'messages sent to openai {messages}')
+        response = self.llm.ChatCompletion.create(
+            engine="gpt-4",
+            messages=messages
+        )
+        response_message_content = response['choices'][0]['message']['content']
+        print(f'openai Response to extract employee id: {response_message_content}')
+        self.dialogueManager.add_message('assistant', response_message_content)
+        return response_message_content
+
+
+
+
     def load_calculation_detail_to_system_message(self, question: str) -> str:  
+        employee_id_str = self.get_employee_id(question)
         try:   
-            employee_id = int(question)  
+            employee_id = int(employee_id_str)  
         except ValueError:  
-            return f"你输入的员工号: {question}是不合法的"  
+            return f"你输入的员工号: {employee_id_str}是不合法的"  
     
         try:   
             calculation_detail = self.calculation_detail_store.get_calculation_detail(employee_id)  
         except Exception as e:  
-            return f"没有查询到员工: {question}的move SAP记录"  
+            return f"没有查询到员工: {employee_id}的move SAP记录"  
  
         self.system_message = self.system_message + '\n' + calculation_detail  
         print(f'system message updated to: {self.system_message}')  
     
-        employee_stock_info = self.calculation_detail_store.get_employee_stock_info(employee_id=int(question)) 
-        print(f'employee_stock_info : {employee_stock_info }')  
+        employee_stock_info = self.calculation_detail_store.get_employee_stock_info(employee_id) 
+        print(f'employee_stock_info : {employee_stock_info}')  
         return employee_stock_info 
 
 
