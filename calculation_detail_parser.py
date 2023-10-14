@@ -54,7 +54,7 @@ def parse_data(file, employee_id: int) -> EmployeeCalculationDetail:
                                      vest_date=vest_date.strftime('%Y/%m/%d'))
 
 
-def parse_data_as_dict(file) -> dict[int, EmployeeCalculationDetail]:
+def parse_data_as_dict_movesap(file) -> dict[int, EmployeeCalculationDetail]:
     employee_id_vs_calculation_detail = {}
     df_indie_ex = pd.read_excel(file, sheet_name='By Indi', nrows=1, header=None)
     citi_spot_exchange_rate = df_indie_ex[12][0]

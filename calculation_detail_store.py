@@ -7,7 +7,7 @@ class InMemoryCalculationDetail:
         file = open(calculation_detail_file_name, 'rb')
         self.calculation_detail_file_name = calculation_detail_file_name
         self.template_file_name = template_file_name
-        self.data_store = calculation_detail_parser.parse_data_as_dict(file=file)
+        self.data_store = calculation_detail_parser.parse_data_as_dict_movesap(file=file)
 
     def get_calculation_detail(self, employee_id: int) -> str:
         detail = self.data_store[employee_id]
