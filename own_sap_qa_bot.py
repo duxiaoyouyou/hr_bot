@@ -42,7 +42,7 @@ class OwnSapBot:
 
     def search(self, question: str) -> str:
         if "no_calculation_detail" in self.system_message:  
-           return "没有own SAP相关内容，我需要你提供更多信息"
+           return "\\n 没有own SAP相关内容，我需要你提供更多信息"
        
         self.dialogueManager.add_message('user', question)
         messages = [
