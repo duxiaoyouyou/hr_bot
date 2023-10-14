@@ -7,11 +7,11 @@ import calculation_detail_store
 logger = logging.getLogger("qa_bot.py")
 
 
-class MoveSapBot:
-    def __init__(self, system_message_file_name: str, calculation_detail_file_name: str, llm: openai):
+class SapBot:
+    def __init__(self, system_message_file_name: str, calculation_detail_file_name: str, template_file_name: str, llm: openai):
         self.llm = llm
         self.system_message = open(system_message_file_name).read()
-        self.calculation_detail_store = calculation_detail_store.InMemoryCalculationDetail(calculation_detail_file_name)
+        self.calculation_detail_store = calculation_detail_store.InMemoryCalculationDetail(calculation_detail_file_name, template_file_name)
         self.functions = {'get_calculation_detail': self.calculation_detail_store.get_calculation_detail}
         self.dialogueManager = DialogueManager()
 

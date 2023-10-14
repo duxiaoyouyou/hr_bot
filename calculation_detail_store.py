@@ -3,13 +3,15 @@ from calculation_step_generator import generate_calculation_step
 
 
 class InMemoryCalculationDetail:
-    def __init__(self):
-        file = open('resources/MoveSAP_0922.xlsx', 'rb')
+    def __init__(self, calculation_detail_file_name: str, template_file_name: str):
+        file = open(calculation_detail_file_name, 'rb')
+        self.calculation_detail_file_name = calculation_detail_file_name
+        self.template_file_name = template_file_name
         self.data_store = calculation_detail_parser.parse_data_as_dict(file=file)
 
     def get_calculation_detail(self, employee_id: int) -> str:
         detail = self.data_store[employee_id]
-        return generate_calculation_step(detail)
+        return generate_calculation_step(self.template_file_name, detail)
     
     def get_employee_stock_info(self, employee_id_input: str, employee_id: int) -> str:  
         detail = self.data_store[employee_id]    

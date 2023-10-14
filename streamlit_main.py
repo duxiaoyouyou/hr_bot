@@ -1,5 +1,5 @@
 import openai
-from move_sap_qa_bot import MoveSapBot
+from sap_qa_bot import SapBot
 import streamlit as st
 import logging
 import os
@@ -16,33 +16,38 @@ openai.api_type = "azure"
 openai.api_version = "2023-07-01-preview"
 
 
-st.title("HR QA Bot")
+st.title("Welcome to HR QA Bot!")
 
+# Clear chat history button  
+if st.button('Clear Chat History'):  
+    st.session_state.messages = []  
+    
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
-if "bot" not in st.session_state:
-    st.session_state.bot = MoveSapBot(openai)
+if "moveSapbot" not in st.session_state:
+    st.session_state.moveSapbot = SapBot('resources/movesap_bot_system_message.txt', 'resources/MoveSAP_0922.xlsx',  'movesap.jinga2', openai)
 with st.chat_message("assistant"):
-    #st.markdown(open('resources/hello_message.txt').read())
     st.markdown(open('resources/hello_message.txt', encoding='utf-8').read())  
+    
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
+  
 # Accept user input
 if prompt := st.chat_input("How can I help you?"):
     # Display user message in chat message container
     with st.chat_message("user"):
         st.markdown(prompt)
-    bot = st.session_state.bot
+    moveSapbot = st.session_state.moveSapbot
     if len(st.session_state.messages) == 0:
         
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
-            response = bot.load_calculation_detail_to_system_message(prompt) #"查询计算过程已完成"
+            response = moveSapbot.load_calculation_detail_to_system_message(prompt) #"查询计算过程已完成"
             st.session_state.messages.append({"role": "assistant", "content": response})
             message_placeholder.markdown(response)
     else:
@@ -50,7 +55,7 @@ if prompt := st.chat_input("How can I help you?"):
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
-            response = bot.search_normal(prompt)
+            response = moveSapbot.search(prompt)
             st.session_state.messages.append({"role": "assistant", "content": response})
             message_placeholder.markdown(response)
 
