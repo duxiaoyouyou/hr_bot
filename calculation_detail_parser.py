@@ -1,4 +1,4 @@
-from employee_calculation_detail import EmployeeCalculationDetail
+from employee_calculation_detail import EmployeeCalculationDetail, EmployeeCalculationDetailOwnSap
 import pandas as pd
 import logging
 from datetime import datetime
@@ -108,3 +108,29 @@ def parse_data_as_dict_movesap(file) -> dict[int, EmployeeCalculationDetail]:
                                                                                    cash_income=cash_income)
     return employee_id_vs_calculation_detail
 
+
+def parse_data_as_dict_ownsap(file) -> dict[int, EmployeeCalculationDetailOwnSap]:
+    employee_id_vs_calculation_detail = {}
+    df_indie_ex = pd.read_excel(file, sheet_name='By Indi', nrows=2, header=None)
+    exchange_rate = 7.3818 #df_indie_ex[9][0]
+
+    df_report = pd.read_excel(file, sheet_name='Print')
+    employee_ids = df_report['SSO_ID'].tolist()
+    for employee_id in employee_ids:
+        df_employee_report = df_report[df_report['SSO_ID'] == employee_id]
+        execution_date = pd.to_datetime(df_employee_report['EXECUTION_DATE'][0])
+        shares_sold = df_employee_report['SHARES_SOLD'][0]
+        executed_price = df_employee_report['EXECUTED_PRICE'][0]
+        gross_proceeds_euro=executed_price * shares_sold                                                                                  
+        fees = df_employee_report['FEES'][0]
+        net_proceeds_euro=gross_proceeds_euro - fees
+        net_proceeds_cny=net_proceeds_euro * exchange_rate                      
+        employee_id_vs_calculation_detail[employee_id] = EmployeeCalculationDetailOwnSap(execution_date=execution_date.strftime('%Y/%m/%d'),
+                                                                                   shares_sold=shares_sold,
+                                                                                   executed_price=executed_price,
+                                                                                   gross_proceeds_euro=gross_proceeds_euro,
+                                                                                   fees = fees,
+                                                                                   net_proceeds_euro=net_proceeds_euro,
+                                                                                   exchange_rate=exchange_rate,
+                                                                                   net_proceeds_cny=net_proceeds_cny)
+    return employee_id_vs_calculation_detail

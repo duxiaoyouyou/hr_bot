@@ -23,6 +23,17 @@ class EmployeeCalculationDetail:
     cash_income: float
     vest_date: str
     grant_date: str
+    
+@dataclass
+class EmployeeCalculationDetailOwnSap:
+    execution_date: str
+    shares_sold: float
+    executed_price: float
+    gross_proceeds_euro: float
+    fees: float
+    net_proceeds_euro: float
+    exchange_rate: float
+    net_proceeds_cny: float
 
 
 

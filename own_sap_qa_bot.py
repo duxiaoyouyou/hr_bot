@@ -2,21 +2,21 @@ import logging
 import openai
 import json
 
-import calculation_detail_store_movesap
+import calculation_detail_store_ownsap
 
 logger = logging.getLogger("qa_bot.py")
 
 
-class MoveSapBot:
+class OwnSapBot:
     def __init__(self, system_message_file_name: str, calculation_detail_file_name: str, template_file_name: str, llm: openai):
         self.llm = llm
         self.system_message = open(system_message_file_name).read()
-        self.calculation_detail_store = calculation_detail_store_movesap.InMemoryCalculationDetailMoveSap(calculation_detail_file_name, template_file_name)
-        #self.functions = {'get_calculation_detail': self.calculation_detail_store.get_calculation_detail}
+        self.calculation_detail_store = calculation_detail_store_ownsap.InMemoryCalculationDetailOwnSap(calculation_detail_file_name, template_file_name)
         self.dialogueManager = DialogueManager()
 
 
     def load_calculation_detail_to_system_message(self, employee_id_input: str) -> str:  
+        #employee_id_input = self.get_employee_id(question)
         try:   
             if employee_id_input[0].lower() == 'i':  
                 employee_id_str = '1' + employee_id_input[1:]  
@@ -30,10 +30,10 @@ class MoveSapBot:
             calculation_detail = self.calculation_detail_store.get_calculation_detail(employee_id)  
         except Exception as e:  
             self.system_message = self.system_message + '\n' + "no_calculation_detail"  
-            return f"没有查询到员工: {employee_id_input}的move SAP记录"  
+            return f"没有查询到员工: {employee_id_input}的own SAP记录"  
  
         self.system_message = self.system_message + '\n' + calculation_detail  
-        print(f'system message for move sap updated to: {self.system_message}')  
+        print(f'system message for own sap updated to: {self.system_message}')  
     
         employee_stock_info = self.calculation_detail_store.get_employee_stock_info(employee_id_input, employee_id) 
         #print(f'employee_stock_info : {employee_stock_info}')  
@@ -42,19 +42,21 @@ class MoveSapBot:
 
     def search(self, question: str) -> str:
         if "no_calculation_detail" in self.system_message:  
-            return ""
+           return "" 
+       
         self.dialogueManager.add_message('user', question)
         messages = [
             {"role": "system", "content": self.system_message}
         ]
         messages.extend(self.dialogueManager.dialogue_history)
+        
         #print(f'messages sent to openai {messages}')
         response = self.llm.ChatCompletion.create(
             engine="gpt-4",
             messages=messages
         )
         response_message_content = response['choices'][0]['message']['content']
-        #print(f'openai Response: {response_message_content}')
+        print(f'openai Response: {response_message_content}')
         self.dialogueManager.add_message('assistant', response_message_content)
         return response_message_content
 
