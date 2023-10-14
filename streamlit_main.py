@@ -52,8 +52,8 @@ def get_employee_id(input: str, llm: openai) -> str:
 
 st.title("Welcome to HR QA Bot!")
 
-# Clear chat history button  
-if st.button('Clear Chat History'):  
+# Clear chat button  
+if st.button('Clear Chat'):  
     st.session_state.messages = []  
     st.session_state.moveSapbot = MoveSapBot('resources/movesap_bot_system_message.txt', 'resources/MoveSAP_0922.xlsx',  'movesap.jinga2', openai)
     st.session_state.ownSapbot = OwnSapBot('resources/ownsap_bot_system_message.txt', 'resources/OwnSAP_2022_Nov.xlsx',  'ownsap.jinga2', openai)
@@ -95,7 +95,7 @@ if prompt := st.chat_input("How can I help you?"):
             response_ownsap = ownSapbot.load_calculation_detail_to_system_message(employee_id_input) 
             st.session_state.messages.append({"role": "assistant", "content": response_ownsap})
             response = f"""
-                {response_movesap}  ;
+                {response_movesap}  \
                 {response_ownsap}
             """   
             message_placeholder.markdown(response)

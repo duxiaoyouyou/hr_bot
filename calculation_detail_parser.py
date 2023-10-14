@@ -111,9 +111,9 @@ def parse_data_as_dict_movesap(file) -> dict[int, EmployeeCalculationDetail]:
 
 def parse_data_as_dict_ownsap(file) -> dict[int, EmployeeCalculationDetailOwnSap]:
     employee_id_vs_calculation_detail = {}
-    df_indie_ex = pd.read_excel(file, sheet_name='By Indi', nrows=2, header=None)
-    exchange_rate = 7.3818 #df_indie_ex[9][0]
-
+    df_indie_ex = pd.read_excel(file, sheet_name='By Indi', nrows=3, header=None)
+    exchange_rate = df_indie_ex[8][2]
+    
     df_report = pd.read_excel(file, sheet_name='Print')
     employee_ids = df_report['SSO_ID'].tolist()
     for employee_id in employee_ids:
