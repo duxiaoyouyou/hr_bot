@@ -93,7 +93,7 @@ class MoveSapBot:
             answer: 1032059 \    
         --- 
         Please only return employee id. \
-        Ensure do NOT provide anything else. \
+        Ensure do NOT provide anything else, such as expressions. \
        """
         messages = [
             {"role": "user", "content": prompt}
@@ -108,21 +108,23 @@ class MoveSapBot:
 
 
     def load_calculation_detail_to_system_message(self, question: str) -> str:  
-        employee_id_str = self.get_employee_id(question)
+        employee_id_input = self.get_employee_id(question)
         try:   
+            if employee_id_input[0].lower() == 'i':  
+                employee_id_str = '1' + employee_id_input[1:]  
             employee_id = int(employee_id_str)  
         except ValueError:  
-            return f"你输入的员工号: {employee_id_str}是不合法的"  
+            return f"你输入的员工号: {employee_id_input}是不合法的"  
     
         try:   
             calculation_detail = self.calculation_detail_store.get_calculation_detail(employee_id)  
         except Exception as e:  
-            return f"没有查询到员工: {employee_id}的move SAP记录"  
+            return f"没有查询到员工: {employee_id_input}的move SAP记录"  
  
         self.system_message = self.system_message + '\n' + calculation_detail  
         print(f'system message updated to: {self.system_message}')  
     
-        employee_stock_info = self.calculation_detail_store.get_employee_stock_info(employee_id) 
+        employee_stock_info = self.calculation_detail_store.get_employee_stock_info(employee_id_input, employee_id) 
         print(f'employee_stock_info : {employee_stock_info}')  
         return employee_stock_info 
 

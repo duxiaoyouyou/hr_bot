@@ -11,7 +11,7 @@ class InMemoryCalculationDetail:
         detail = self.data_store[employee_id]
         return generate_calculation_step(detail)
     
-    def get_employee_stock_info(self, employee_id: int) -> str:  
+    def get_employee_stock_info(self, employee_id_input: str, employee_id: int) -> str:  
         detail = self.data_store[employee_id]    
-        return f"查询到员工{employee_id}在{detail.vest_date}获得{detail.shares_vested}份股票，计算过程已经理解完成。"  
+        return f"查询到员工{employee_id_input}在{detail.vest_date}获得{detail.shares_vested}份股票，计算过程已经理解完成。"  
   
