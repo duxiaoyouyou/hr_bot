@@ -46,7 +46,7 @@ def get_employee_id(input: str, llm: openai) -> str:
         )
         response_message_content = response['choices'][0]['message']['content']
         print("employee id extracted: " + response_message_content)
-        return response_message_content[:6]
+        return response_message_content.replace('"','')[:7]
 
 
 st.title("Welcome to HR QA Bot!")
@@ -93,7 +93,7 @@ if prompt := st.chat_input("How can I help you?"):
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             
-            employee_id_input = get_employee_id(prompt,openai).replace('"', '')
+            employee_id_input = get_employee_id(prompt,openai)
             try:   
                 if employee_id_input[0].lower() == 'i':  
                     employee_id_str = '1' + employee_id_input[1:]  
