@@ -118,7 +118,7 @@ if prompt := st.chat_input("How can I help you?"):
                     st.session_state.messages.append({"role": "assistant", "content": stock_info})       
                 else:
                     system_message = "no_calcualtion_detail"
-                    stock_info = f"请告诉我想了解的员工号: {employee_id_input}的move SAP还是own SAP相关股票信息" 
+                    stock_info = f"请告诉我你想查询的员工: {employee_id_input}的move SAP还是own SAP相关股票信息" 
                     st.session_state.messages = []
             message_placeholder.markdown(stock_info)
             
