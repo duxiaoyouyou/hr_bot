@@ -1,4 +1,5 @@
 import openai
+import re
 
 import streamlit as st
 import logging
@@ -19,20 +20,20 @@ openai.api_type = "azure"
 openai.api_version = "2023-07-01-preview"
 
 def get_employee_id(input: str, llm: openai) -> str:  
+        words = input.split()  
+        if len(words) == 1 and re.match("^[A-Za-z]*$", words[0]):  
+            return words[0]
+        
         prompt = f"""
         The user provides his input delimited by triple quotes. \
         \"\"\" {input} \"\"\" \    
         You will return the employee ID based on the input.
         Your answer will be in a consistent format, following the examples delimited by triple hyphens below . \
         --- 
-            input: I am working in SAP, my ID is 1033961 \
-            answer: 1033961 \
-            input: I am with ID 1032059 \
-            answer: 1032059 \
-            input: 1033961 \
-            answer: 1033961 \
-            input: 1032059 \
-            answer: 1032059 \    
+            input: I am working in SAP, my ID is i033961 \
+            answer: i033961 \
+            input: I am with ID i518639 \
+            answer: i518639 \  
         --- 
         Please only return employee id. \
         Ensure do NOT provide anything else, such as expressions. \
@@ -46,6 +47,7 @@ def get_employee_id(input: str, llm: openai) -> str:
             messages=messages
         )
         response_message_content = response['choices'][0]['message']['content']
+        print("response_message_content for employee id: " + response_message_content)
         return response_message_content
 
 
@@ -109,10 +111,11 @@ if prompt := st.chat_input("How can I help you?"):
             response_ownsap = ownSapbot.search(prompt)
             st.session_state.messages.append({"role": "assistant", "content": response_ownsap})
             response = f"""
-                {response_movesap}  \
+                {response_movesap}  
                 {response_ownsap}
             """   
             message_placeholder.markdown(response)
             
 
 
+    

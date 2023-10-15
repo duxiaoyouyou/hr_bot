@@ -16,7 +16,6 @@ class OwnSapBot:
 
 
     def load_calculation_detail_to_system_message(self, employee_id_input: str) -> str:  
-        #employee_id_input = self.get_employee_id(question)
         try:   
             if employee_id_input[0].lower() == 'i':  
                 employee_id_str = '1' + employee_id_input[1:]  
@@ -42,7 +41,7 @@ class OwnSapBot:
 
     def search(self, question: str) -> str:
         if "no_calculation_detail" in self.system_message:  
-           return "\\n 没有own SAP相关内容，我需要你提供更多信息"
+           return ""
        
         self.dialogueManager.add_message('user', question)
         messages = [

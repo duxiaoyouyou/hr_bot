@@ -42,7 +42,7 @@ class MoveSapBot:
 
     def search(self, question: str) -> str:
         if "no_calculation_detail" in self.system_message:  
-            return "\\n 没有move SAP相关内容，我需要你提供更多信息"
+            return ""
         self.dialogueManager.add_message('user', question)
         messages = [
             {"role": "system", "content": self.system_message}
