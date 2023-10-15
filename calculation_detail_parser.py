@@ -121,9 +121,9 @@ def parse_data_as_dict_ownsap(file) -> dict[int, EmployeeCalculationDetailOwnSap
         execution_date = pd.to_datetime(df_employee_report['EXECUTION_DATE'][0])
         shares_sold = df_employee_report['SHARES_SOLD'][0]
         executed_price = df_employee_report['EXECUTED_PRICE'][0]
-        gross_proceeds_euro=executed_price * shares_sold                                                                                  
+        gross_proceeds_euro=df_employee_report['GROSS_PROCEEDS'][0]                                                                                 
         fees = df_employee_report['FEES'][0]
-        net_proceeds_euro=gross_proceeds_euro - fees
+        net_proceeds_euro=df_employee_report['NET_PROCEEDS_9M64'][0]
         net_proceeds_cny=net_proceeds_euro * exchange_rate                      
         employee_id_vs_calculation_detail[employee_id] = EmployeeCalculationDetailOwnSap(execution_date=execution_date.strftime('%Y/%m/%d'),
                                                                                    shares_sold=shares_sold,

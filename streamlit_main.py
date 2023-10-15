@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from move_sap_qa_bot import MoveSapBot
 from own_sap_qa_bot import OwnSapBot
+from sap_qa_bot import SapBot
 
 load_dotenv('.env')
 
@@ -31,36 +32,21 @@ def get_employee_id(input: str, llm: openai) -> str:
         Your answer will be in a consistent format, following the examples delimited by triple hyphens below . \
         --- 
             input: I am working in SAP, my ID is i033961 \
-            answer: i033961 \
+            i033961 \
             input: I am with ID i518639 \
-            answer: i518639 \  
+            i518639 \  
         --- 
         Please only return employee id. \
         Ensure do NOT provide anything else, such as expressions. \
        """
-        messages = [
-            {"role": "user", "content": prompt}
-        ]
-        print(f'messages sent to openai {messages}')
+        messages = [ {"role": "user", "content": prompt} ]
         response = llm.ChatCompletion.create(
             engine="gpt-4",
             messages=messages
         )
         response_message_content = response['choices'][0]['message']['content']
-        print("response_message_content for employee id: " + response_message_content)
+        print("employee id extracted: " + response_message_content)
         return response_message_content
-
-
-def convert_employee_id(employee_id_input: str) -> bool:  
-        try:   
-            if employee_id_input[0].lower() == 'i':  
-                employee_id_str = '1' + employee_id_input[1:]  
-            else:
-                employee_id_str = employee_id_input
-            employee_id = int(employee_id_str)  
-        except ValueError:  
-            return True
-    
 
 
 st.title("Welcome to HR QA Bot!")
@@ -70,6 +56,7 @@ if st.button('Clear Chat'):
     st.session_state.messages = []  
     st.session_state.moveSapbot = MoveSapBot('resources/movesap_bot_system_message.txt', 'resources/MoveSAP_0922.xlsx',  'movesap.jinga2', openai)
     st.session_state.ownSapbot = OwnSapBot('resources/ownsap_bot_system_message.txt', 'resources/OwnSAP_2022_Nov.xlsx',  'ownsap.jinga2', openai)
+    st.session_state.sapbot = SapBot("", openai)
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -78,6 +65,9 @@ if "moveSapbot" not in st.session_state:
     st.session_state.moveSapbot = MoveSapBot('resources/movesap_bot_system_message.txt', 'resources/MoveSAP_0922.xlsx',  'movesap.jinga2', openai)
 if "ownSapbot" not in st.session_state:
     st.session_state.ownSapbot = OwnSapBot('resources/ownsap_bot_system_message.txt', 'resources/OwnSAP_2022_Nov.xlsx',  'ownsap.jinga2', openai)
+if "sapbot" not in st.session_state:
+    st.session_state.sapbot = SapBot("", openai)
+    
 
 with st.chat_message("assistant"):
     st.markdown(open('resources/hello_message.txt', encoding='utf-8').read())  
@@ -95,6 +85,7 @@ if prompt := st.chat_input("How can I help you?"):
         
     moveSapbot = st.session_state.moveSapbot
     ownSapbot = st.session_state.ownSapbot
+    sapbot = st.session_state.sapbot
     
     if len(st.session_state.messages) == 0:
         # Add user message to chat history
@@ -102,7 +93,7 @@ if prompt := st.chat_input("How can I help you?"):
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
             
-            employee_id_input = get_employee_id(prompt,openai)
+            employee_id_input = get_employee_id(prompt,openai).replace('"', '')
             try:   
                 if employee_id_input[0].lower() == 'i':  
                     employee_id_str = '1' + employee_id_input[1:]  
@@ -110,30 +101,31 @@ if prompt := st.chat_input("How can I help you?"):
                     employee_id_str = employee_id_input
                 employee_id = int(employee_id_str)  
             except ValueError:  
-                response = f"你输入的员工号: {employee_id_input}是不合法的" 
+                system_message = "no_calcualtion_detail"
+                stock_info = f"你输入的员工号: {employee_id_input}是不合法的" 
             else:
-                response_movesap = moveSapbot.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
-                st.session_state.messages.append({"role": "assistant", "content": response_movesap})
-                response_ownsap = ownSapbot.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
-                st.session_state.messages.append({"role": "assistant", "content": response_ownsap})
-                response = f"""
-                    {response_movesap}  \
-                    {response_ownsap}
-                """   
-            message_placeholder.markdown(response)
+                if("MOVE" in prompt or "move" in prompt):
+                    system_message_stock_info = moveSapbot.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
+                    system_message = system_message_stock_info["system_message"]
+                    stock_info = system_message_stock_info["stock_info"]
+                elif("OWN" in prompt or "own" in prompt):
+                    system_message_stock_info = ownSapbot.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
+                    system_message = system_message_stock_info["system_message"]
+                    stock_info = system_message_stock_info["stock_info"] 
+                else:
+                    system_message = "no_calcualtion_detail"
+                    stock_info = f"没有查询到的员工号: {employee_id_input}的股票信息" 
+            message_placeholder.markdown(stock_info)
+            st.session_state.messages.append({"role": "assistant", "content": stock_info})
+                    
+            sapbot.updateSystemMessge(system_message)
     else:
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
-            response_movesap = moveSapbot.search(prompt)
-            st.session_state.messages.append({"role": "assistant", "content": response_movesap})
-            response_ownsap = ownSapbot.search(prompt)
-            st.session_state.messages.append({"role": "assistant", "content": response_ownsap})
-            response = f"""
-                {response_movesap}  
-                {response_ownsap}
-            """   
+            response = sapbot.search(prompt)
+            st.session_state.messages.append({"role": "assistant", "content": response})
             message_placeholder.markdown(response)
             
 

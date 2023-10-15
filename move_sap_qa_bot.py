@@ -20,34 +20,16 @@ class MoveSapBot:
         try:   
             calculation_detail = self.calculation_detail_store.get_calculation_detail(employee_id)  
         except Exception as e:  
-            self.system_message = self.system_message + '\n' + "no_calculation_detail"  
-            return f"没有查询到员工: {employee_id_input}的move SAP记录"  
- 
+            calculation_detail = '\n' + "no_calculation_detail"  
+            employee_stock_info = f"没有查询到员工: {employee_id_input}的move SAP记录"  
+        else:
+            employee_stock_info = self.calculation_detail_store.get_employee_stock_info(employee_id_input, employee_id)   
+         
         self.system_message = self.system_message + '\n' + calculation_detail  
         print(f'system message for move sap updated to: {self.system_message}')  
     
-        employee_stock_info = self.calculation_detail_store.get_employee_stock_info(employee_id_input, employee_id) 
-        #print(f'employee_stock_info : {employee_stock_info}')  
-        return employee_stock_info 
-
-
-    def search(self, question: str) -> str:
-        if "no_calculation_detail" in self.system_message:  
-            return ""
-        self.dialogueManager.add_message('user', question)
-        messages = [
-            {"role": "system", "content": self.system_message}
-        ]
-        messages.extend(self.dialogueManager.dialogue_history)
-        #print(f'messages sent to openai {messages}')
-        response = self.llm.ChatCompletion.create(
-            engine="gpt-4",
-            messages=messages
-        )
-        response_message_content = response['choices'][0]['message']['content']
-        #print(f'openai Response: {response_message_content}')
-        self.dialogueManager.add_message('assistant', response_message_content)
-        return response_message_content
+        system_message_stock_info = {"system_message": self.system_message, "stock_info": employee_stock_info} 
+        return system_message_stock_info
 
 
     # def searchViaFunctionCall(self, question: str) -> str:
