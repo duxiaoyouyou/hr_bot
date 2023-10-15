@@ -24,7 +24,8 @@ class SapBot:
         messages.extend(self.dialogueManager.dialogue_history)
         response = self.llm.ChatCompletion.create(
             engine="gpt-4",
-            messages=messages
+            messages=messages,
+            temperature=0.01
         )
         response_message_content = response['choices'][0]['message']['content']
         #print(f'openai Response: {response_message_content}')

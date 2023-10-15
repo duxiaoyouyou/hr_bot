@@ -42,7 +42,8 @@ def get_employee_id(input: str, llm: openai) -> str:
         messages = [ {"role": "user", "content": prompt} ]
         response = llm.ChatCompletion.create(
             engine="gpt-4",
-            messages=messages
+            messages=messages,
+            temperature=0.01
         )
         response_message_content = response['choices'][0]['message']['content']
         print("employee id extracted: " + response_message_content)
