@@ -107,18 +107,21 @@ if prompt := st.chat_input("How can I help you?"):
                 if("MOVE" in prompt or "move" in prompt):
                     system_message_stock_info = moveSapHandler.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
                     system_message = system_message_stock_info["system_message"]
+                    sapbot.updateSystemMessge(system_message)
                     stock_info = system_message_stock_info["stock_info"]
+                    st.session_state.messages.append({"role": "assistant", "content": stock_info})       
                 elif("OWN" in prompt or "own" in prompt):
                     system_message_stock_info = ownSapHandler.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
                     system_message = system_message_stock_info["system_message"]
+                    sapbot.updateSystemMessge(system_message)
                     stock_info = system_message_stock_info["stock_info"] 
+                    st.session_state.messages.append({"role": "assistant", "content": stock_info})       
                 else:
                     system_message = "no_calcualtion_detail"
-                    stock_info = f"没有查询到的员工号: {employee_id_input}的股票信息" 
+                    stock_info = f"请告诉我想了解的员工号: {employee_id_input}的move SAP还是own SAP相关股票信息" 
+                    st.session_state.messages = []
             message_placeholder.markdown(stock_info)
-            st.session_state.messages.append({"role": "assistant", "content": stock_info})
-                    
-            sapbot.updateSystemMessge(system_message)
+            
     else:
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
