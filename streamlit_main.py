@@ -102,25 +102,29 @@ if prompt := st.chat_input("How can I help you?"):
                     employee_id_str = employee_id_input
                 employee_id = int(employee_id_str)  
             except ValueError:  
-                system_message = "no_calcualtion_detail"
-                stock_info = f"你输入的员工号: {employee_id_input}是不合法的" 
+                system_message = "no_calculation_detail"
+                stock_info = f"你输入的员工号: {employee_id_input}是不合法的， 请重新输入" 
+                st.session_state.messages = []
             else:
                 if("MOVE" in prompt or "move" in prompt):
                     system_message_stock_info = moveSapHandler.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
-                    
                     system_message = system_message_stock_info["system_message"]
-                    sapbot.updateSystemMessge(system_message)
-                    
                     stock_info = system_message_stock_info["stock_info"]
-                    st.session_state.messages.append({"role": "assistant", "content": stock_info})       
+                    if("no_calculation_detail" in system_message):
+                        st.session_state.messages = []
+                    else:
+                        sapbot.updateSystemMessge(system_message)
+                        st.session_state.messages.append({"role": "assistant", "content": stock_info}) 
+                            
                 elif("OWN" in prompt or "own" in prompt):
                     system_message_stock_info = ownSapHandler.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
-                    
-                    system_message = system_message_stock_info["system_message"]
-                    sapbot.updateSystemMessge(system_message)
-                    
                     stock_info = system_message_stock_info["stock_info"] 
-                    st.session_state.messages.append({"role": "assistant", "content": stock_info})       
+                    system_message = system_message_stock_info["system_message"]
+                    if("no_calculation_detail" in system_message):
+                        st.session_state.messages = []
+                    else:
+                        sapbot.updateSystemMessge(system_message)
+                        st.session_state.messages.append({"role": "assistant", "content": stock_info})
                 else:
                     stock_info = f"请告诉我你想查询的员工: {employee_id_input}的move SAP还是own SAP相关股票信息" 
                     st.session_state.messages = []

@@ -16,7 +16,7 @@ class OwnSapHandler:
             calculation_detail = self.calculation_detail_store.get_calculation_detail(employee_id)  
         except Exception as e:  
             calculation_detail = '\n' + "no_calculation_detail"  
-            employee_stock_info = f"没有查询到员工: {employee_id_input}的own SAP记录"  
+            employee_stock_info = f"没有查询到员工: {employee_id_input}的own SAP记录, 请重新输入员工号和股票信息"  
         else:
             employee_stock_info = self.calculation_detail_store.get_employee_stock_info(employee_id_input, employee_id)   
          
