@@ -15,16 +15,7 @@ class OwnSapBot:
         self.dialogueManager = DialogueManager()
 
 
-    def load_calculation_detail_to_system_message(self, employee_id_input: str) -> str:  
-        try:   
-            if employee_id_input[0].lower() == 'i':  
-                employee_id_str = '1' + employee_id_input[1:]  
-            else:
-                employee_id_str = employee_id_input
-            employee_id = int(employee_id_str)  
-        except ValueError:  
-            return f"你输入的员工号: {employee_id_input}是不合法的"  
-    
+    def load_calculation_detail_to_system_message(self, employee_id_input: str, employee_id: str) -> str:  
         try:   
             calculation_detail = self.calculation_detail_store.get_calculation_detail(employee_id)  
         except Exception as e:  

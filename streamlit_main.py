@@ -27,7 +27,7 @@ def get_employee_id(input: str, llm: openai) -> str:
         prompt = f"""
         The user provides his input delimited by triple quotes. \
         \"\"\" {input} \"\"\" \    
-        You will return the employee ID based on the input.
+        You will return the employee ID.
         Your answer will be in a consistent format, following the examples delimited by triple hyphens below . \
         --- 
             input: I am working in SAP, my ID is i033961 \
@@ -50,6 +50,17 @@ def get_employee_id(input: str, llm: openai) -> str:
         print("response_message_content for employee id: " + response_message_content)
         return response_message_content
 
+
+def convert_employee_id(employee_id_input: str) -> bool:  
+        try:   
+            if employee_id_input[0].lower() == 'i':  
+                employee_id_str = '1' + employee_id_input[1:]  
+            else:
+                employee_id_str = employee_id_input
+            employee_id = int(employee_id_str)  
+        except ValueError:  
+            return True
+    
 
 
 st.title("Welcome to HR QA Bot!")
@@ -86,20 +97,29 @@ if prompt := st.chat_input("How can I help you?"):
     ownSapbot = st.session_state.ownSapbot
     
     if len(st.session_state.messages) == 0:
-        
         # Add user message to chat history
         st.session_state.messages.append({"role": "user", "content": prompt})
         with st.chat_message("assistant"):
             message_placeholder = st.empty()
+            
             employee_id_input = get_employee_id(prompt,openai)
-            response_movesap = moveSapbot.load_calculation_detail_to_system_message(employee_id_input) 
-            st.session_state.messages.append({"role": "assistant", "content": response_movesap})
-            response_ownsap = ownSapbot.load_calculation_detail_to_system_message(employee_id_input) 
-            st.session_state.messages.append({"role": "assistant", "content": response_ownsap})
-            response = f"""
-                {response_movesap}  \
-                {response_ownsap}
-            """   
+            try:   
+                if employee_id_input[0].lower() == 'i':  
+                    employee_id_str = '1' + employee_id_input[1:]  
+                else:
+                    employee_id_str = employee_id_input
+                employee_id = int(employee_id_str)  
+            except ValueError:  
+                response = f"你输入的员工号: {employee_id_input}是不合法的" 
+            else:
+                response_movesap = moveSapbot.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
+                st.session_state.messages.append({"role": "assistant", "content": response_movesap})
+                response_ownsap = ownSapbot.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
+                st.session_state.messages.append({"role": "assistant", "content": response_ownsap})
+                response = f"""
+                    {response_movesap}  \
+                    {response_ownsap}
+                """   
             message_placeholder.markdown(response)
     else:
         # Add user message to chat history
