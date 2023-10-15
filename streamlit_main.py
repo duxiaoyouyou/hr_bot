@@ -3,11 +3,11 @@ import re
 
 import streamlit as st
 import logging
-import os
+
 from dotenv import load_dotenv
 
-from move_sap_qa_bot import MoveSapBot
-from own_sap_qa_bot import OwnSapBot
+from move_sap_handler import MoveSapHandler
+from own_sap_handler import OwnSapHandler
 from sap_qa_bot import SapBot
 
 load_dotenv('.env')
@@ -46,7 +46,7 @@ def get_employee_id(input: str, llm: openai) -> str:
         )
         response_message_content = response['choices'][0]['message']['content']
         print("employee id extracted: " + response_message_content)
-        return response_message_content
+        return response_message_content[:6]
 
 
 st.title("Welcome to HR QA Bot!")
@@ -54,17 +54,17 @@ st.title("Welcome to HR QA Bot!")
 # Clear chat button  
 if st.button('Clear Chat'):  
     st.session_state.messages = []  
-    st.session_state.moveSapbot = MoveSapBot('resources/movesap_bot_system_message.txt', 'resources/MoveSAP_0922.xlsx',  'movesap.jinga2', openai)
-    st.session_state.ownSapbot = OwnSapBot('resources/ownsap_bot_system_message.txt', 'resources/OwnSAP_2022_Nov.xlsx',  'ownsap.jinga2', openai)
+    st.session_state.moveSapHandler = MoveSapHandler('resources/movesap_bot_system_message.txt', 'resources/MoveSAP_0922.xlsx',  'movesap.jinga2')
+    st.session_state.ownSapHandler = OwnSapHandler('resources/ownsap_bot_system_message.txt', 'resources/OwnSAP_2022_Nov.xlsx',  'ownsap.jinga2')
     st.session_state.sapbot = SapBot("", openai)
 
 # Initialize chat history
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "moveSapbot" not in st.session_state:
-    st.session_state.moveSapbot = MoveSapBot('resources/movesap_bot_system_message.txt', 'resources/MoveSAP_0922.xlsx',  'movesap.jinga2', openai)
+    st.session_state.moveSapHandler = MoveSapHandler('resources/movesap_bot_system_message.txt', 'resources/MoveSAP_0922.xlsx',  'movesap.jinga2')
 if "ownSapbot" not in st.session_state:
-    st.session_state.ownSapbot = OwnSapBot('resources/ownsap_bot_system_message.txt', 'resources/OwnSAP_2022_Nov.xlsx',  'ownsap.jinga2', openai)
+    st.session_state.ownSapHandler = OwnSapHandler('resources/ownsap_bot_system_message.txt', 'resources/OwnSAP_2022_Nov.xlsx',  'ownsap.jinga2')
 if "sapbot" not in st.session_state:
     st.session_state.sapbot = SapBot("", openai)
     
@@ -83,8 +83,8 @@ if prompt := st.chat_input("How can I help you?"):
     with st.chat_message("user"):
         st.markdown(prompt)
         
-    moveSapbot = st.session_state.moveSapbot
-    ownSapbot = st.session_state.ownSapbot
+    moveSapHandler = st.session_state.moveSapHandler
+    ownSapHandler = st.session_state.ownSapHandler
     sapbot = st.session_state.sapbot
     
     if len(st.session_state.messages) == 0:
@@ -105,11 +105,11 @@ if prompt := st.chat_input("How can I help you?"):
                 stock_info = f"你输入的员工号: {employee_id_input}是不合法的" 
             else:
                 if("MOVE" in prompt or "move" in prompt):
-                    system_message_stock_info = moveSapbot.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
+                    system_message_stock_info = moveSapHandler.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
                     system_message = system_message_stock_info["system_message"]
                     stock_info = system_message_stock_info["stock_info"]
                 elif("OWN" in prompt or "own" in prompt):
-                    system_message_stock_info = ownSapbot.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
+                    system_message_stock_info = ownSapHandler.load_calculation_detail_to_system_message(employee_id_input, employee_id) 
                     system_message = system_message_stock_info["system_message"]
                     stock_info = system_message_stock_info["stock_info"] 
                 else:
