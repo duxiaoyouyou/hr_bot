@@ -1,0 +1,5 @@
+1. An employee sells OwnSAP stock, current case: the employee sold {{detail.shares_sold}} shares of OwnSAP stock on {{detail.execution_date}}. The unit price is €{{detail.executed_price}}, and the total price is €{{detail.gross_proceeds_euro}}. The handling fee is €{{detail.fees}}, and the actual income is €{{detail.net_proceeds_euro}}.
+
+2. After the money arrives in China, it is converted into RMB, then enters the review period, and is temporarily held by Citibank for 6 weeks. The exchange rate when entering China was {{detail.exchange_rate}}, so it was converted into RMB {{detail.net_proceeds_euro}} * {{detail.exchange_rate}} = {{detail.net_proceeds_cny}}.
+
+3. At the end of the review period, the employee will receive a cash amount of {{detail.net_proceeds_cny}}. This cash will not be seen on the payslip, it will be directly deposited into the card, and the display subject is 'Cash Ops Stock'.

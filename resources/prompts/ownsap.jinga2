@@ -1,5 +1,9 @@
-1. An employee sells OwnSAP stock, current case: the employee sold {{detail.shares_sold}} shares of OwnSAP stock on {{detail.execution_date}}. The unit price is €{{detail.executed_price}}, and the total price is €{{detail.gross_proceeds_euro}}. The handling fee is €{{detail.fees}}, and the actual income is €{{detail.net_proceeds_euro}}.
 
-2. After the money arrives in China, it is converted into RMB, then enters the review period, and is temporarily held by Citibank for 6 weeks. The exchange rate when entering China was {{detail.exchange_rate}}, so it was converted into RMB {{detail.net_proceeds_euro}} * {{detail.exchange_rate}} = {{detail.net_proceeds_cny}}.
+1.某员工出售 Own SAP 股票，当前案例：该员工于 {{detail.execution_date}} 出售了 {{detail.shares_sold}} 股 Own SAP 股票，交易号为{{detail.transaction_no}}。单价为 {{detail.executed_price}} 欧元/股，总价为 {{detail.gross_proceeds_euro}} 欧元。手续费为 {{detail.fees}}欧元，净收入为 {{detail.net_proceeds_euro}} 欧元。手续费的计算方式是{{detail.gross_proceeds_euro}} *0.3%={{detail.fees}}欧元，如不足10欧按10欧元计算。
+ 
+2.欧元进入中国，经过外汇合规审核后结汇成人民币，结汇时的汇率为{{detail.exchange_rate}}，因此兑换成人民币为 {{detail.net_proceeds_euro}} * {{detail.exchange_rate}}= {{detail.net_proceeds_cny}}。外汇合规审核的时间约为1-2个月。
+ 
+3.在收款人合规审核通过后，员工将在{{detail.payment_execution_date}}之后的5个工作日左右收到{{detail.net_proceeds_cny}}人民币。这笔钱直接由花旗打入员工工资卡，员工工资卡的开户行为{{detail.branch}}。收入的显示主题为[Cash OPS STOCK]，不会出现在工资单上。在银行APP中，可以通过我的>收支>右上角搜索栏>输入stock进行查找。
+ 
+如果你不知道答案，可以让员工创建HR ticket。
 
-3. At the end of the review period, the employee will receive a cash amount of {{detail.net_proceeds_cny}}. This cash will not be seen on the payslip, it will be directly deposited into the card, and the display subject is 'Cash Ops Stock'.

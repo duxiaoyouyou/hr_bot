@@ -34,6 +34,11 @@ class EmployeeCalculationDetailOwnSap:
     net_proceeds_euro: float
     exchange_rate: float
     net_proceeds_cny: float
+    vehicle: str
+    transaction_no: str
+    branch: str
+    payment_execution_date: str
+    
 
 
 

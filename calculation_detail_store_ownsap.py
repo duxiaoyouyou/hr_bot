@@ -10,12 +10,12 @@ class InMemoryCalculationDetailOwnSap:
         self.data_store = calculation_detail_parser.parse_data_as_dict_ownsap(file=file)
 
 
-    def get_calculation_detail(self, employee_id: int) -> str:
+    def get_calculation_detail(self, employee_id: str) -> str:
         detail = self.data_store[employee_id]
         return generate_calculation_step(self.template_file_name, detail)
     
     
-    def get_employee_stock_info(self, employee_id_input: str, employee_id: int) -> str:  
+    def get_employee_stock_info(self, employee_id_input: str, employee_id: str) -> str:  
         detail = self.data_store[employee_id]    
         return f"查询到员工{employee_id_input}在{detail.execution_date}卖出了{detail.shares_sold}份own SAP股票，计算过程已经理解完成。"  
   

@@ -109,22 +109,28 @@ def parse_data_as_dict_movesap(file) -> dict[int, EmployeeCalculationDetail]:
     return employee_id_vs_calculation_detail
 
 
-def parse_data_as_dict_ownsap(file) -> dict[int, EmployeeCalculationDetailOwnSap]:
-    employee_id_vs_calculation_detail = {}
-    df_indie_ex = pd.read_excel(file, sheet_name='By Indi', nrows=3, header=None)
-    exchange_rate = df_indie_ex[8][2]
-    
-    df_report = pd.read_excel(file, sheet_name='Print')
+def parse_data_as_dict_ownsap(file) -> dict[str, EmployeeCalculationDetailOwnSap]:
+    employee_id_vs_calculation_detail = {} 
+    df_report = pd.read_excel(file, sheet_name='Sheet1')
+    print(df_report.columns)
     employee_ids = df_report['SSO_ID'].tolist()
     for employee_id in employee_ids:
         df_employee_report = df_report[df_report['SSO_ID'] == employee_id]
-        execution_date = pd.to_datetime(df_employee_report['EXECUTION_DATE'][0])
-        shares_sold = df_employee_report['SHARES_SOLD'][0]
-        executed_price = df_employee_report['EXECUTED_PRICE'][0]
-        gross_proceeds_euro=df_employee_report['GROSS_PROCEEDS'][0]                                                                                 
-        fees = df_employee_report['FEES'][0]
-        net_proceeds_euro=df_employee_report['NET_PROCEEDS_9M64'][0]
-        net_proceeds_cny=net_proceeds_euro * exchange_rate                      
+     
+        execution_date = pd.to_datetime(df_employee_report['EXECUTION_DATE'].iloc[0])
+        shares_sold = df_employee_report['SHARES_SOLD'].iloc[0]  
+        executed_price = df_employee_report['EXECUTED_PRICE'].iloc[0]  
+        gross_proceeds_euro = df_employee_report['GROSS_PROCEEDS'].iloc[0]  
+        fees = df_employee_report['FEES'].iloc[0]  
+        net_proceeds_euro = df_employee_report['NET_PROCEEDS_9M64'].iloc[0]  
+        exchange_rate = df_employee_report['FOREIGN EXCHANGE RATE'].iloc[0]  
+        net_proceeds_cny = df_employee_report['AMOUNT IN CNY'].iloc[0]  
+        vehicle = df_employee_report['VEHICLE'].iloc[0]  
+        transaction_no = df_employee_report['ORDER/_TRANSACTION_NO.'].iloc[0]
+        payment_execution_date = pd.to_datetime(df_employee_report['PAYMENT EXECUTION_DATE'].iloc[0])  
+        branch = df_employee_report['BRANCH'].iloc[0]  
+
+        
         employee_id_vs_calculation_detail[employee_id] = EmployeeCalculationDetailOwnSap(execution_date=execution_date.strftime('%Y/%m/%d'),
                                                                                    shares_sold=shares_sold,
                                                                                    executed_price=executed_price,
@@ -132,5 +138,10 @@ def parse_data_as_dict_ownsap(file) -> dict[int, EmployeeCalculationDetailOwnSap
                                                                                    fees = fees,
                                                                                    net_proceeds_euro=net_proceeds_euro,
                                                                                    exchange_rate=exchange_rate,
-                                                                                   net_proceeds_cny=net_proceeds_cny)
+                                                                                   net_proceeds_cny=net_proceeds_cny,
+                                                                                   vehicle=vehicle,
+                                                                                   transaction_no=transaction_no,
+                                                                                   payment_execution_date=payment_execution_date.strftime('%Y/%m/%d'),
+                                                                                   branch=branch
+                                                                                   )
     return employee_id_vs_calculation_detail
